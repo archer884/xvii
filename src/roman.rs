@@ -61,7 +61,7 @@ impl Roman {
     /// it is.
     ///
     /// > Note: being "unprintable" is not memory unsafe and will not panic.
-    pub unsafe fn from_unchecked(n: i32) -> Roman {
+    pub fn from_unchecked(n: i32) -> Roman {
         Roman(n)
     }
 
