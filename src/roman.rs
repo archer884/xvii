@@ -104,9 +104,18 @@ impl str::FromStr for Roman {
     type Err = ParseRomanError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        RomanUnitIterator::new(s)
-            .sum::<Result<i32, ParseRomanError>>()
-            .and_then(|n| Roman::from(n).ok_or_else(|| ParseRomanError::out_of_range(n)))
+
+        // This code is neat but only runs on nightly for now:
+        // RomanUnitIterator::new(s)
+        //     .sum::<Result<i32, ParseRomanError>>()
+        //     .and_then(|n| Roman::from(n).ok_or_else(|| ParseRomanError::out_of_range(n)))
+
+        let mut acc = 0;
+        for n in RomanUnitIterator::new(s) {
+            let n = n?;
+            acc += n;
+        }
+        Ok(Roman::from(acc).ok_or_else(|| ParseRomanError::out_of_range(acc))?)
     }
 }
 
