@@ -4,7 +4,7 @@ use std::str;
 /// Iterates "units" of a Roman numeral.
 ///
 /// I have arbitrarily decided that a "unit" of a Roman numeral is any sequence
-/// of characters which does not shrink in value. `IX` is one unit. `XII` is two 
+/// of characters which does not shrink in value. `IX` is one unit. `XII` is two
 /// units. The first has a value of `9`, while the second is two values: `[10, 2]`.
 /// My theory is that this will allow me to calculate the value of a Roman numeral
 /// by reading from left to right just once.

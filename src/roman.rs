@@ -18,6 +18,20 @@ static LADDER: &'static [(&'static str, i32)] = &[("M", 1000),
                                                   ("IV", 4),
                                                   ("I", 1)];
 
+static LADDER_LOWERCASE: &'static [(&'static str, i32)] = &[("m", 1000),
+                                                            ("cm", 900),
+                                                            ("d", 500),
+                                                            ("cd", 400),
+                                                            ("c", 100),
+                                                            ("xc", 90),
+                                                            ("l", 50),
+                                                            ("xl", 40),
+                                                            ("x", 10),
+                                                            ("ix", 9),
+                                                            ("v", 5),
+                                                            ("iv", 4),
+                                                            ("i", 1)];
+
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Roman(i32);
 
@@ -31,6 +45,30 @@ impl Roman {
 
     pub unsafe fn from_raw_unchecked(n: i32) -> Roman {
         Roman(n)
+    }
+
+    pub fn to_uppercase(&self) -> String {
+        let mut current = self.0;
+        let mut buf = String::new();
+        for &(unit, value) in LADDER.iter() {
+            while current >= value {
+                buf.push_str(unit);
+                current -= value;
+            }
+        }
+        buf
+    }
+
+    pub fn to_lowercase(&self) -> String {
+        let mut current = self.0;
+        let mut buf = String::new();
+        for &(unit, value) in LADDER_LOWERCASE.iter() {
+            while current >= value {
+                buf.push_str(unit);
+                current -= value;
+            }
+        }
+        buf
     }
 }
 
@@ -54,15 +92,7 @@ impl str::FromStr for Roman {
 
 impl fmt::Display for Roman {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut current = self.0;
-        let mut buf = String::new();
-        for &(unit, value) in LADDER.iter() {
-            while current >= value {
-                buf.push_str(unit);
-                current -= value;
-            }
-        }
-        f.write_str(&buf)
+        f.write_str(&self.to_uppercase())
     }
 }
 
