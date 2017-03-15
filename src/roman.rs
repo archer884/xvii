@@ -35,20 +35,37 @@ mod ladder {
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
+/// A Roman numeral.
+///
+/// This struct stores the value of a numeral as an `i32` but provides
+/// for Roman-style formatting.
 pub struct Roman(i32);
 
 impl Roman {
-    pub fn from_raw(n: i32) -> Option<Roman> {
+    /// Creates a `Roman` value based on an `i32`.
+    ///
+    /// This function will return `None` if the value supplied is outside the
+    /// acceptable range of `1...3999`, because numbers outside that range
+    /// cannot be appropriately formatted using the seven standard numerals.
+    pub fn from(n: i32) -> Option<Roman> {
         match n {
             n @ 1...3999 => Some(Roman(n)),
             _ => None,
         }
     }
 
-    pub unsafe fn from_raw_unchecked(n: i32) -> Roman {
+    /// Creates a `Roman` value based on an `i32`.
+    ///
+    /// This function will return any `i32` wrapped in a `Roman` newtype
+    /// without bothering to check its range, regardless of how unprintable
+    /// it is.
+    ///
+    /// > Note: being "unprintable" is not memory unsafe and will not panic.
+    pub unsafe fn from_unchecked(n: i32) -> Roman {
         Roman(n)
     }
 
+    /// Formats a `Roman` value as an uppercase Roman numeral.
     pub fn to_uppercase(&self) -> String {
         let mut current = self.0;
         let mut buf = String::new();
@@ -61,6 +78,7 @@ impl Roman {
         buf
     }
 
+    /// Formats a `Roman` value as a lowercase Roman numeral.
     pub fn to_lowercase(&self) -> String {
         let mut current = self.0;
         let mut buf = String::new();
@@ -88,7 +106,7 @@ impl str::FromStr for Roman {
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         RomanUnitIterator::new(s)
             .sum::<Result<i32, ParseRomanError>>()
-            .and_then(|n| Roman::from_raw(n).ok_or_else(|| ParseRomanError::out_of_range(n)))
+            .and_then(|n| Roman::from(n).ok_or_else(|| ParseRomanError::out_of_range(n)))
     }
 }
 
@@ -104,21 +122,21 @@ mod tests {
 
     #[test]
     fn mcmlxxxiv_equals_1984() {
-        assert_eq!("MCMLXXXIV", &*Roman(1984).to_string());
+        assert_eq!("MCMLXXXIV", Roman(1984).to_string());
     }
 
     #[test]
     fn mmdxxix_equals_2529() {
-        assert_eq!("MMDXXIX", &*Roman(2529).to_string());
+        assert_eq!("MMDXXIX", Roman(2529).to_string());
     }
 
     #[test]
     fn mmcmxcix_equals_2999() {
-        assert_eq!("MMCMXCIX", &*Roman(2999).to_string());
+        assert_eq!("MMCMXCIX", Roman(2999).to_string());
     }
 
     #[test]
     fn max_value_equals_3999() {
-        assert_eq!("MMMCMXCIX", &*Roman(3999).to_string());
+        assert_eq!("MMMCMXCIX", Roman(3999).to_string());
     }
 }
