@@ -1,6 +1,9 @@
 [package]
-name = "rome"
+name = "xvii"
 version = "0.1.0"
 authors = ["J/A <archer884@gmail.com>"]
+description = """
+Library for parsing or printing Roman numerals
+"""
 
-[dependencies]
+license = "MIT/Apache-2.0"
