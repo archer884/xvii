@@ -7,3 +7,5 @@ Library for parsing or printing Roman numerals
 """
 
 license = "MIT/Apache-2.0"
+homepage = "https://github.com/archer884/xvii"
+documentation = "https://docs.rs/xvii"
