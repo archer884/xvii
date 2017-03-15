@@ -56,7 +56,7 @@ impl fmt::Display for Roman {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut current = self.0;
         for &(unit, value) in LADDER.iter() {
-            while (current - value) >= 0 {
+            while current >= value {
                 f.write_str(unit)?;
                 current -= value;
             }
