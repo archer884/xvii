@@ -4,33 +4,35 @@ use std::ops;
 use std::str;
 use unit::RomanUnitIterator;
 
-static LADDER: &'static [(&'static str, i32)] = &[("M", 1000),
-                                                  ("CM", 900),
-                                                  ("D", 500),
-                                                  ("CD", 400),
-                                                  ("C", 100),
-                                                  ("XC", 90),
-                                                  ("L", 50),
-                                                  ("XL", 40),
-                                                  ("X", 10),
-                                                  ("IX", 9),
-                                                  ("V", 5),
-                                                  ("IV", 4),
-                                                  ("I", 1)];
+mod ladder {
+    pub static UPPER: &'static [(&'static str, i32)] = &[("M", 1000),
+                                                         ("CM", 900),
+                                                         ("D", 500),
+                                                         ("CD", 400),
+                                                         ("C", 100),
+                                                         ("XC", 90),
+                                                         ("L", 50),
+                                                         ("XL", 40),
+                                                         ("X", 10),
+                                                         ("IX", 9),
+                                                         ("V", 5),
+                                                         ("IV", 4),
+                                                         ("I", 1)];
 
-static LADDER_LOWERCASE: &'static [(&'static str, i32)] = &[("m", 1000),
-                                                            ("cm", 900),
-                                                            ("d", 500),
-                                                            ("cd", 400),
-                                                            ("c", 100),
-                                                            ("xc", 90),
-                                                            ("l", 50),
-                                                            ("xl", 40),
-                                                            ("x", 10),
-                                                            ("ix", 9),
-                                                            ("v", 5),
-                                                            ("iv", 4),
-                                                            ("i", 1)];
+    pub static LOWER: &'static [(&'static str, i32)] = &[("m", 1000),
+                                                         ("cm", 900),
+                                                         ("d", 500),
+                                                         ("cd", 400),
+                                                         ("c", 100),
+                                                         ("xc", 90),
+                                                         ("l", 50),
+                                                         ("xl", 40),
+                                                         ("x", 10),
+                                                         ("ix", 9),
+                                                         ("v", 5),
+                                                         ("iv", 4),
+                                                         ("i", 1)];
+}
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Roman(i32);
@@ -50,7 +52,7 @@ impl Roman {
     pub fn to_uppercase(&self) -> String {
         let mut current = self.0;
         let mut buf = String::new();
-        for &(unit, value) in LADDER.iter() {
+        for &(unit, value) in ladder::UPPER.iter() {
             while current >= value {
                 buf.push_str(unit);
                 current -= value;
@@ -62,7 +64,7 @@ impl Roman {
     pub fn to_lowercase(&self) -> String {
         let mut current = self.0;
         let mut buf = String::new();
-        for &(unit, value) in LADDER_LOWERCASE.iter() {
+        for &(unit, value) in ladder::LOWER.iter() {
             while current >= value {
                 buf.push_str(unit);
                 current -= value;
