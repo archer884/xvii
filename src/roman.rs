@@ -92,6 +92,12 @@ impl Roman {
     }
 }
 
+impl AsRef<i32> for Roman {
+    fn as_ref(&self) -> &i32 {
+        &self.0
+    }
+}
+
 impl ops::Deref for Roman {
     type Target = i32;
 
