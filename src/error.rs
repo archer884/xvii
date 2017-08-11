@@ -1,12 +1,13 @@
-use std::borrow;
 use std::error;
 use std::fmt;
+
+use std::borrow::Cow;
 
 #[derive(Debug)]
 /// An error in parsing a Roman numeral.
 pub struct ParseRomanError {
     kind: ParseRomanErrorKind,
-    message: borrow::Cow<'static, str>,
+    message: Cow<'static, str>,
 }
 
 #[derive(Debug)]
@@ -22,14 +23,14 @@ impl ParseRomanError {
     pub fn invalid_digit(digit: u8) -> ParseRomanError {
         ParseRomanError {
             kind: ParseRomanErrorKind::InvalidDigit(digit),
-            message: borrow::Cow::Borrowed("Invalid digit"),
+            message: Cow::from("Invalid digit"),
         }
     }
 
     pub fn out_of_range(n: i32) -> ParseRomanError {
         ParseRomanError {
             kind: ParseRomanErrorKind::OutOfRange(n),
-            message: borrow::Cow::Borrowed("Value out of range (1...3999)"),
+            message: Cow::from("Value out of range (1...3999)"),
         }
     }
 }
