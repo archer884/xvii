@@ -10,6 +10,8 @@ This library provides parsing and formatting for Roman numerals. According to my
 
 (Seriously, though, read the license--no warranties implied!)
 
+## Usage
+
 ### Parsing
 
 Parsing is provided through Rust's ordinary `FromStr` trait, meaning you can create `Roman` values same as you create any other number--albeit with slightly simpler error cases, since the only possible errors are "Hey, that letter can't go in there," or "Dude, they go from 1 to 3999 and that's it!"
