@@ -1,37 +1,41 @@
-use error::ParseRomanError;
+use error::*;
 use std::fmt;
 use std::ops;
 use std::str;
 use unit::RomanUnitIterator;
 
 mod ladder {
-    pub static UPPER: &'static [(&'static str, i32)] = &[("M", 1000),
-                                                         ("CM", 900),
-                                                         ("D", 500),
-                                                         ("CD", 400),
-                                                         ("C", 100),
-                                                         ("XC", 90),
-                                                         ("L", 50),
-                                                         ("XL", 40),
-                                                         ("X", 10),
-                                                         ("IX", 9),
-                                                         ("V", 5),
-                                                         ("IV", 4),
-                                                         ("I", 1)];
+    pub static UPPER: &[(&str, i32)] = &[
+        ("M", 1000),
+        ("CM", 900),
+        ("D", 500),
+        ("CD", 400),
+        ("C", 100),
+        ("XC", 90),
+        ("L", 50),
+        ("XL", 40),
+        ("X", 10),
+        ("IX", 9),
+        ("V", 5),
+        ("IV", 4),
+        ("I", 1),
+    ];
 
-    pub static LOWER: &'static [(&'static str, i32)] = &[("m", 1000),
-                                                         ("cm", 900),
-                                                         ("d", 500),
-                                                         ("cd", 400),
-                                                         ("c", 100),
-                                                         ("xc", 90),
-                                                         ("l", 50),
-                                                         ("xl", 40),
-                                                         ("x", 10),
-                                                         ("ix", 9),
-                                                         ("v", 5),
-                                                         ("iv", 4),
-                                                         ("i", 1)];
+    pub static LOWER: &[(&str, i32)] = &[
+        ("m", 1000),
+        ("cm", 900),
+        ("d", 500),
+        ("cd", 400),
+        ("c", 100),
+        ("xc", 90),
+        ("l", 50),
+        ("xl", 40),
+        ("x", 10),
+        ("ix", 9),
+        ("v", 5),
+        ("iv", 4),
+        ("i", 1),
+    ];
 }
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
@@ -107,12 +111,14 @@ impl ops::Deref for Roman {
 }
 
 impl str::FromStr for Roman {
-    type Err = ParseRomanError;
+    type Err = RomanError;
 
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         RomanUnitIterator::new(s)
-            .sum::<Result<i32, ParseRomanError>>()
-            .and_then(|n| Roman::from(n).ok_or_else(|| ParseRomanError::out_of_range(n)))
+            .sum::<Result<i32>>()
+            .and_then(|n| {
+                Roman::from(n).ok_or_else(|| RomanError::out_of_range(n))
+            })
     }
 }
 
