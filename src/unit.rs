@@ -1,4 +1,4 @@
-use error::ParseRomanError;
+use error::*;
 use std::str;
 
 /// Iterates "units" of a Roman numeral.
@@ -23,7 +23,7 @@ impl<'a> RomanUnitIterator<'a> {
 }
 
 impl<'a> Iterator for RomanUnitIterator<'a> {
-    type Item = Result<i32, ParseRomanError>;
+    type Item = Result<i32>;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -54,7 +54,7 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
     }
 }
 
-fn to_digit(c: u8) -> Result<i32, ParseRomanError> {
+fn to_digit(c: u8) -> Result<i32> {
     use std::ascii::AsciiExt;
     match c.to_ascii_lowercase() {
         b'm' => Ok(1000),
@@ -65,7 +65,7 @@ fn to_digit(c: u8) -> Result<i32, ParseRomanError> {
         b'v' => Ok(5),
         b'i' => Ok(1),
 
-        _ => Err(ParseRomanError::invalid_digit(c)),
+        _ => Err(RomanError::invalid_digit(c)),
     }
 }
 
