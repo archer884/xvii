@@ -51,6 +51,7 @@ impl fmt::Display for RomanError {
             RomanErrorKind::InvalidDigit(digit) => {
                 write!(f, "{}: {}", self.description(), (digit as char))
             }
+            
             RomanErrorKind::OutOfRange(value) => {
                 write!(f, "{}: {}", self.description(), value)
             }
