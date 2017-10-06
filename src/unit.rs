@@ -27,7 +27,7 @@ impl Accumulator {
             }
 
             Less => PushResult::Complete(val - self.value(), None),
-            Greater => PushResult::Complete(self.value(), Some(Accumulator::new(val)))
+            Greater => PushResult::Complete(self.value(), Some(Accumulator::new(val))),
         }
     }
 
