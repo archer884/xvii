@@ -3,12 +3,13 @@
 [![Crates.io](https://img.shields.io/crates/v/xvii.svg)](https://crates.io/crates/xvii)
 [![Build Status](https://travis-ci.org/archer884/xvii.svg?branch=master)](https://travis-ci.org/archer884/xvii)
 
-
 ...Pronounced any way you like, including "seventeen."
 
 This library provides parsing and formatting for Roman numerals. According to my (probably extremely suspect) benchmarks, this is the best-performing library of its kind available on crates.io (you know, as of St. Patrick's Day, 2017 when I did the tests), so you should definitely employ it in your high-availability NAAS (numerals-as-a-service) project.
 
 (Seriously, though, read the license--no warranties implied!)
+
+Also, if you have a high-availability NAAS project, you need to have your head examined. I don't know if that was clear when I originally wrote this readme, so I'm adding it now.
 
 ## Usage
 
@@ -26,9 +27,9 @@ There are several formatting options. `Roman` implements `Display`, which means 
 
 Regarding formatting, there is one gotcha regarding the formatting of `Roman` values created via `Roman::from_unchecked()`: values that are less than the minimum printable value will come out as empty strings, while values that are larger will simply look like `MMMMMMMMMMMMMMMXIV` or something like that.
 
-## Roadmap
+## Changelog
 
-I'm thinking of stealing that feature from the other library where you can use the `"{:x}"` or `"{:X}"` formatters to choose upper vs. lower case in formatting.
+* *v0.2.2* Upgrade parsing to use some kind of whacky state machine in order to permit numbers up to the commonly accepted ceiling of 4999, or MMMMCMXCIX, thereby avoiding a potential Y4K bug. Your thousand year reich is now safe with me.
 
 ## License
 

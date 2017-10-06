@@ -53,7 +53,7 @@ impl Roman {
     /// cannot be appropriately formatted using the seven standard numerals.
     pub fn from(n: i32) -> Option<Roman> {
         match n {
-            n @ 1...3999 => Some(Roman(n)),
+            n @ 1...4999 => Some(Roman(n)),
             _ => None,
         }
     }
@@ -148,7 +148,18 @@ mod tests {
     }
 
     #[test]
-    fn max_value_equals_3999() {
+    fn mmmcmxcix_value_equals_3999() {
         assert_eq!("MMMCMXCIX", Roman(3999).to_string());
+    }
+
+    #[test]
+    fn max_value_equals_4999() {
+        assert_eq!("MMMMCMXCIX", Roman(4999).to_string());
+    }
+
+    #[test]
+    fn mmmmcmxcix_parses_as_4999() {
+        let result: Roman = "MMMMCMXCIX".parse().unwrap();
+        assert_eq!(4999, *result);
     }
 }
