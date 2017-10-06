@@ -29,7 +29,7 @@ Regarding formatting, there is one gotcha regarding the formatting of `Roman` va
 
 ## Changelog
 
-* *v0.2.2* Upgrade parsing to use some kind of whacky state machine in order to permit numbers up to the commonly accepted ceiling of 4999, or MMMMCMXCIX, thereby avoiding a potential Y4K bug. Your thousand year reich is now safe with me.
+* **v0.2.2** Upgrade parsing to use some kind of whacky state machine in order to permit numbers up to the commonly accepted ceiling of 4999, or MMMMCMXCIX, thereby avoiding a potential Y4K bug. Your thousand year reich is now safe with me.
 
 ## License
 
