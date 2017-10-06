@@ -15,7 +15,7 @@ Also, if you have a high-availability NAAS project, you need to have your head e
 
 ### Parsing
 
-Parsing is provided through Rust's ordinary `FromStr` trait, meaning you can create `Roman` values same as you create any other number--albeit with slightly simpler error cases, since the only possible errors are "Hey, that letter can't go in there," or "Dude, they go from 1 to 3999 and that's it!"
+Parsing is provided through Rust's ordinary `FromStr` trait, meaning you can create `Roman` values same as you create any other number--albeit with slightly simpler error cases, since the only possible errors are "Hey, that letter can't go in there," or "Dude, they go from 1 to 4999 and that's it!"
 
 ```rust
 let seventeen: Roman = "XVII".parse().unwrap();

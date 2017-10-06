@@ -49,7 +49,7 @@ impl Roman {
     /// Creates a `Roman` value based on an `i32`.
     ///
     /// This function will return `None` if the value supplied is outside the
-    /// acceptable range of `1...3999`, because numbers outside that range
+    /// acceptable range of `1...4999`, because numbers outside that range
     /// cannot be appropriately formatted using the seven standard numerals.
     pub fn from(n: i32) -> Option<Roman> {
         match n {
