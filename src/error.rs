@@ -38,7 +38,7 @@ impl RomanError {
     pub fn out_of_range(n: i32) -> RomanError {
         RomanError {
             kind: RomanErrorKind::OutOfRange(n),
-            message: Cow::from("Value out of range (1...3999)"),
+            message: Cow::from("Value out of range (1...4999)"),
         }
     }
 }
