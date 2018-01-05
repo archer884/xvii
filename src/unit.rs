@@ -116,8 +116,7 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
 }
 
 fn to_digit(c: u8) -> Result<i32> {
-    use std::ascii::AsciiExt;
-    match c.to_ascii_lowercase() {
+    match c | 32 {
         b'm' => Ok(1000),
         b'd' => Ok(500),
         b'c' => Ok(100),
@@ -134,6 +133,15 @@ fn to_digit(c: u8) -> Result<i32> {
 mod tests {
     use roman::Roman;
     use unit::RomanUnitIterator;
+
+    #[test]
+    fn to_digit_works() {
+        let digits = b"mDcLxVi";
+        assert!(digits.iter().all(|&d| super::to_digit(d).is_ok()));
+
+        let digits = b"aBeFgH";
+        assert!(digits.iter().all(|&d| super::to_digit(d).is_err()));
+    }
 
     #[test]
     fn i_equals_1() {

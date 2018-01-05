@@ -12,7 +12,7 @@ fn convert_from(b: &mut Bencher) {
     
     b.iter(|| {
         for value in &values {
-            test::black_box(value.parse::<Roman>());
+            test::black_box(value.parse::<Roman>().ok());
         }
     });
 }
