@@ -130,20 +130,7 @@ fn to_digit(c: u8) -> Result<i32> {
 #[cfg(test)]
 mod tests {
     use roman::Roman;
-    use unit::{Accumulator, RomanUnitIterator};
-    
-    #[test]
-    fn accumulator_works() {
-        let mut acc = Accumulator::new(1);
-        
-        acc.push(1);
-        acc.push(1);
-        acc.push(1);
-        acc.push(1);
-        acc.push(10);
-
-        assert_eq!(5, acc.value());   
-    }    
+    use unit::RomanUnitIterator;
 
     #[test]
     fn to_digit_works() {
