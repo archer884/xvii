@@ -17,13 +17,13 @@ impl Accumulator {
         Accumulator { qty: 1, val }
     }
 
-    fn push(&mut self, val: i32) -> PushResult {
+    fn push(mut self, val: i32) -> PushResult {
         use std::cmp::Ordering::*;
 
         match self.val.cmp(&val) {
             Equal => {
                 self.qty += 1;
-                PushResult::Partial
+                PushResult::Partial(self)
             }
 
             Less => PushResult::Complete(val - self.value(), None),
@@ -44,7 +44,7 @@ impl Accumulator {
 /// will cause the accumulator to emit a complete result, signifying that a value should be
 /// produced by the iterator and a new accumulator created.
 enum PushResult {
-    Partial,
+    Partial(Accumulator),
     Complete(i32, Option<Accumulator>),
 }
 
@@ -72,24 +72,40 @@ impl<'a> RomanUnitIterator<'a> {
 impl<'a> Iterator for RomanUnitIterator<'a> {
     type Item = Result<i32>;
 
+    // This appears to be deeply nested. I haven't the foggiest how that happened. >.>
     fn next(&mut self) -> Option<Self::Item> {
         loop {
             match self.bytes.next() {
-                None => return self.acc.take().map(|acc| Ok(acc.value())),
+                // If there are no more bytes left, just check for a leftover accumulator.
+                None => {
+                    return self.acc.take().map(|acc| Ok(acc.value()));
+                }
+
                 Some(u) => {
+                    // Return early if the next byte is invalid.
                     let value = match to_digit(u) {
                         Ok(u) => u,
                         Err(e) => return Some(Err(e)),
                     };
 
+                    // Check for an existing accumulator.
                     match self.acc.take() {
-                        None => self.acc = Some(Accumulator::new(value)),
-                        Some(mut acc) => {
-                            if let PushResult::Complete(n, acc) = acc.push(value) {
+                        // If we don't have one, make a new one with our new byte.
+                        None => {
+                            self.acc = Some(Accumulator::new(value));
+                        }
+
+                        // Apply the new byte to any existing accumulator.
+                        Some(acc) => match acc.push(value) {
+                            PushResult::Complete(n, acc) => {
                                 self.acc = acc;
                                 return Some(Ok(n));
                             }
-                        }
+
+                            PushResult::Partial(acc) => {
+                                self.acc = Some(acc);
+                            }
+                        },
                     }
                 }
             }
@@ -97,8 +113,8 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
     }
 }
 
-fn to_digit(u: u8) -> Result<i32> {
-    match u | 32 {
+fn to_digit(c: u8) -> Result<i32> {
+    match c | 32 {
         b'm' => Ok(1000),
         b'd' => Ok(500),
         b'c' => Ok(100),
@@ -107,7 +123,7 @@ fn to_digit(u: u8) -> Result<i32> {
         b'v' => Ok(5),
         b'i' => Ok(1),
 
-        _ => Err(Error::InvalidDigit(u)),
+        _ => Err(Error::InvalidDigit(c)),
     }
 }
 
