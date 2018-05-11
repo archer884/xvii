@@ -72,40 +72,23 @@ impl<'a> RomanUnitIterator<'a> {
 impl<'a> Iterator for RomanUnitIterator<'a> {
     type Item = Result<i32>;
 
-    // This appears to be deeply nested. I haven't the foggiest how that happened. >.>
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            match self.bytes.next() {
-                // If there are no more bytes left, just check for a leftover accumulator.
-                None => {
-                    return self.acc.take().map(|acc| Ok(acc.value()));
+            let value = match self.bytes.next() {
+                None => return self.acc.take().map(|acc| Ok(acc.value())),
+                Some(u) => match to_digit(u) {
+                    Ok(u) => u,
+                    Err(e) => return Some(Err(e)),
                 }
+            };
 
-                Some(u) => {
-                    // Return early if the next byte is invalid.
-                    let value = match to_digit(u) {
-                        Ok(u) => u,
-                        Err(e) => return Some(Err(e)),
-                    };
-
-                    // Check for an existing accumulator.
-                    match self.acc.take() {
-                        // If we don't have one, make a new one with our new byte.
-                        None => {
-                            self.acc = Some(Accumulator::new(value));
-                        }
-
-                        // Apply the new byte to any existing accumulator.
-                        Some(acc) => match acc.push(value) {
-                            PushResult::Complete(n, acc) => {
-                                self.acc = acc;
-                                return Some(Ok(n));
-                            }
-
-                            PushResult::Partial(acc) => {
-                                self.acc = Some(acc);
-                            }
-                        },
+            match self.acc.take() {
+                None => self.acc = Some(Accumulator::new(value)),
+                Some(acc) => match acc.push(value) {
+                    PushResult::Partial(acc) => self.acc = Some(acc),
+                    PushResult::Complete(n, acc) => {
+                        self.acc = acc;
+                        return Some(Ok(n));
                     }
                 }
             }
@@ -113,8 +96,8 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
     }
 }
 
-fn to_digit(c: u8) -> Result<i32> {
-    match c | 32 {
+fn to_digit(u: u8) -> Result<i32> {
+    match u | 32 {
         b'm' => Ok(1000),
         b'd' => Ok(500),
         b'c' => Ok(100),
@@ -123,7 +106,7 @@ fn to_digit(c: u8) -> Result<i32> {
         b'v' => Ok(5),
         b'i' => Ok(1),
 
-        _ => Err(Error::InvalidDigit(c)),
+        _ => Err(Error::InvalidDigit(u)),
     }
 }
 
