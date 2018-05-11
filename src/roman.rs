@@ -111,14 +111,12 @@ impl ops::Deref for Roman {
 }
 
 impl str::FromStr for Roman {
-    type Err = RomanError;
+    type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
         RomanUnitIterator::new(s)
             .sum::<Result<i32>>()
-            .and_then(|n| {
-                Roman::from(n).ok_or_else(|| RomanError::out_of_range(n))
-            })
+            .and_then(|n| Roman::from(n).ok_or_else(|| Error::OutOfRange(n)))
     }
 }
 

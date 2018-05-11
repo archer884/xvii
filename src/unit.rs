@@ -96,18 +96,16 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
                         }
 
                         // Apply the new byte to any existing accumulator.
-                        Some(acc) => {
-                            match acc.push(value) {
-                                PushResult::Complete(n, acc) => {
-                                    self.acc = acc;
-                                    return Some(Ok(n));
-                                }
-
-                                PushResult::Partial(acc) => {
-                                    self.acc = Some(acc);
-                                }
+                        Some(acc) => match acc.push(value) {
+                            PushResult::Complete(n, acc) => {
+                                self.acc = acc;
+                                return Some(Ok(n));
                             }
-                        }
+
+                            PushResult::Partial(acc) => {
+                                self.acc = Some(acc);
+                            }
+                        },
                     }
                 }
             }
@@ -125,7 +123,7 @@ fn to_digit(c: u8) -> Result<i32> {
         b'v' => Ok(5),
         b'i' => Ok(1),
 
-        _ => Err(RomanError::invalid_digit(c)),
+        _ => Err(Error::InvalidDigit(c)),
     }
 }
 

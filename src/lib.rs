@@ -21,9 +21,9 @@
 //! assert_eq!("XVII", seventeen.to_string());
 //! ```
 
-mod error;
 mod roman;
 mod unit;
 
-pub use error::*;
-pub use roman::*;
+pub mod error;
+
+pub use roman::Roman;
