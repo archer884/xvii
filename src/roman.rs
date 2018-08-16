@@ -70,7 +70,7 @@ impl Roman {
     }
 
     /// Formats a `Roman` value as an uppercase Roman numeral.
-    pub fn to_uppercase(&self) -> String {
+    pub fn to_uppercase(self) -> String {
         let mut current = self.0;
         let mut buf = String::new();
         for &(unit, value) in ladder::UPPER.iter() {
@@ -83,7 +83,7 @@ impl Roman {
     }
 
     /// Formats a `Roman` value as a lowercase Roman numeral.
-    pub fn to_lowercase(&self) -> String {
+    pub fn to_lowercase(self) -> String {
         let mut current = self.0;
         let mut buf = String::new();
         for &(unit, value) in ladder::LOWER.iter() {
