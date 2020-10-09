@@ -13,11 +13,11 @@
 //! ```rust
 //! # use xvii::Roman;
 //! let seventeen: Roman = "XVII".parse().unwrap();
-//! assert_eq!(17, *seventeen);
+//! assert_eq!(17, seventeen.into_inner());
 //! assert_eq!("XVII", seventeen.to_string());
 //!
-//! let seventeen = Roman::from(17).unwrap();
-//! assert_eq!(17, *seventeen);
+//! let seventeen = Roman::new(17).unwrap();
+//! assert_eq!(17, seventeen.into_inner());
 //! assert_eq!("XVII", seventeen.to_string());
 //! ```
 
@@ -27,3 +27,5 @@ mod unit;
 
 pub use error::Error;
 pub use roman::Roman;
+
+pub type Result<T, E = Error> = std::result::Result<T, E>;

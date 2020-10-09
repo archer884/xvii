@@ -1,4 +1,4 @@
-use error::*;
+use crate::{Error, Result};
 use std::str;
 
 /// Accumulates the value of a single numeral "unit."
@@ -79,7 +79,7 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
                 Some(u) => match to_digit(u) {
                     Ok(u) => u,
                     Err(e) => return Some(Err(e)),
-                }
+                },
             };
 
             match self.acc.take() {
@@ -90,7 +90,7 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
                         self.acc = acc;
                         return Some(Ok(n));
                     }
-                }
+                },
             }
         }
     }
@@ -112,8 +112,8 @@ fn to_digit(u: u8) -> Result<i32> {
 
 #[cfg(test)]
 mod tests {
-    use roman::Roman;
-    use unit::RomanUnitIterator;
+    use super::RomanUnitIterator;
+    use crate::Roman;
 
     #[test]
     fn to_digit_works() {
@@ -126,8 +126,8 @@ mod tests {
 
     #[test]
     fn i_equals_1() {
-        assert_eq!(1, *"i".parse::<Roman>().unwrap());
-        assert_eq!(1, *"I".parse::<Roman>().unwrap());
+        assert_eq!(1, "i".parse::<Roman>().unwrap().into_inner());
+        assert_eq!(1, "I".parse::<Roman>().unwrap().into_inner());
     }
 
     #[test]
@@ -138,12 +138,12 @@ mod tests {
 
     #[test]
     fn ix_equals_9() {
-        assert_eq!(9, *"ix".parse::<Roman>().unwrap());
+        assert_eq!(9, "ix".parse::<Roman>().unwrap().into_inner());
     }
 
     #[test]
     fn iiiiix_equals_5() {
         // Yes, I know this is stupid, but this is how units are meant to work.
-        assert_eq!(5, *"iiiiix".parse::<Roman>().unwrap());
+        assert_eq!(5, "iiiiix".parse::<Roman>().unwrap().into_inner());
     }
 }
