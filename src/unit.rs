@@ -8,16 +8,16 @@ use std::str;
 /// multiplying these two.
 #[derive(Default)]
 struct Accumulator {
-    qty: i32,
-    val: i32,
+    qty: u16,
+    val: u16,
 }
 
 impl Accumulator {
-    fn new(val: i32) -> Self {
+    fn new(val: u16) -> Self {
         Accumulator { qty: 1, val }
     }
 
-    fn push(mut self, val: i32) -> PushResult {
+    fn push(mut self, val: u16) -> PushResult {
         use std::cmp::Ordering::*;
 
         match self.val.cmp(&val) {
@@ -31,7 +31,7 @@ impl Accumulator {
         }
     }
 
-    fn value(&self) -> i32 {
+    fn value(&self) -> u16 {
         self.qty * self.val
     }
 }
@@ -45,7 +45,7 @@ impl Accumulator {
 /// produced by the iterator and a new accumulator created.
 enum PushResult {
     Partial(Accumulator),
-    Complete(i32, Option<Accumulator>),
+    Complete(u16, Option<Accumulator>),
 }
 
 /// Iterates "units" of a Roman numeral.
@@ -70,7 +70,7 @@ impl<'a> RomanUnitIterator<'a> {
 }
 
 impl<'a> Iterator for RomanUnitIterator<'a> {
-    type Item = Result<i32>;
+    type Item = Result<u16>;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
@@ -96,7 +96,7 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
     }
 }
 
-fn to_digit(u: u8) -> Result<i32> {
+fn to_digit(u: u8) -> Result<u16> {
     match u.to_ascii_lowercase() {
         b'm' => Ok(1000),
         b'd' => Ok(500),

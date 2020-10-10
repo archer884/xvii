@@ -10,7 +10,7 @@ pub enum Error {
     InvalidDigit(u8),
 
     /// Value out of range.
-    OutOfRange(i32),
+    OutOfRange(u16),
 }
 
 impl Display for Error {
