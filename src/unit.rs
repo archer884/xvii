@@ -1,9 +1,10 @@
-use crate::{Error, Result};
 use std::str;
 
-/// Accumulates the value of a single numeral "unit."
+use crate::{Error, Result};
+
+/// Accumulates the value of a single numeral "unit".
 ///
-/// qty represents the number of times the numeral has appeared in the unit, while num represents
+/// `qty` represents the number of times the numeral has appeared in the unit, while `num` represents
 /// the numeric value of the numeral. Obviously, the final value of the unit is evaluated by
 /// multiplying these two.
 #[derive(Default)]
@@ -39,7 +40,7 @@ impl Accumulator {
 /// The result of a push onto an accumulator.
 ///
 /// Adding an additional instance of the original unit onto an accumulator emits a partial result
-/// because the accumulator may have an indefinite number of such instances. I, II, III, IIIIIII
+/// because the accumulator may have an indefinite number of such instances. `I`, `II`, `III`, `IIIIIII`
 /// and so forth are all valid contents for an accumulator. However, changing the unit value
 /// will cause the accumulator to emit a complete result, signifying that a value should be
 /// produced by the iterator and a new accumulator created.
@@ -97,7 +98,7 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
 }
 
 fn to_digit(u: u8) -> Result<i32> {
-    match u | 32 {
+    match u.to_ascii_lowercase() {
         b'm' => Ok(1000),
         b'd' => Ok(500),
         b'c' => Ok(100),
