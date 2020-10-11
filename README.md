@@ -1,6 +1,7 @@
 # XVII
 
 [![Crates.io](https://img.shields.io/crates/v/xvii.svg)](https://crates.io/crates/xvii)
+[![documentation (docs.rs)](https://docs.rs/xvii/badge.svg)](https://docs.rs/xvii)
 [![Build Status](https://travis-ci.org/archer884/xvii.svg?branch=master)](https://travis-ci.org/archer884/xvii)
 
 ...Pronounced any way you like, including "seventeen."

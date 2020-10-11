@@ -20,12 +20,19 @@
 //! assert_eq!(17, seventeen.into_inner());
 //! assert_eq!("XVII", seventeen.to_string());
 //! ```
+#![deny(
+    unsafe_code,
+    missing_docs,
+    missing_debug_implementations,
+    broken_intra_doc_links
+)]
 
 mod error;
 mod roman;
 mod unit;
 
 pub use error::Error;
-pub use roman::Roman;
+pub use roman::{Roman, RomanFormatter, Style};
 
+/// [`Result`](std::result::Result) with error defaulted to [`xvii::Error`](Error)
 pub type Result<T, E = Error> = std::result::Result<T, E>;
