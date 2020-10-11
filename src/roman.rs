@@ -1,9 +1,10 @@
+mod ladder;
+
+use crate::{unit::RomanUnitIterator, Error, Result};
 use std::{
     fmt::{self, Display},
     str::FromStr,
 };
-
-use crate::{unit::RomanUnitIterator, Error, Result};
 
 /// A Roman numeral.
 ///
@@ -25,17 +26,6 @@ impl Roman {
         }
     }
 
-    /// Creates a [`Roman`] value based on a [`u16`].
-    ///
-    /// This function will return any [`u16`] wrapped in a `Roman` newtype
-    /// without bothering to check its range, regardless of how unprintable
-    /// it is.
-    ///
-    /// > Note: being "unprintable" is not memory unsafe and will not panic.
-    pub fn new_unchecked(n: u16) -> Roman {
-        Roman(n)
-    }
-
     /// Formats a [`Roman`] value as an uppercase Roman numeral.
     ///
     /// ## Examples
@@ -48,7 +38,7 @@ impl Roman {
         let mut current = self.0;
         let mut buf = String::new();
 
-        for entry in LADDER {
+        for entry in ladder::VALUES {
             while current >= entry.value {
                 current -= entry.value;
                 buf += entry.upper;
@@ -70,7 +60,7 @@ impl Roman {
         let mut current = self.0;
         let mut buf = String::new();
 
-        for entry in LADDER {
+        for entry in ladder::VALUES {
             while current >= entry.value {
                 current -= entry.value;
                 buf += entry.lower;
@@ -99,7 +89,7 @@ impl Roman {
     }
 
     /// Returns the inner value.
-    pub fn into_inner(self) -> u16 {
+    pub fn get(self) -> u16 {
         self.0
     }
 }
@@ -126,7 +116,7 @@ impl Display for RomanFormatter {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         let mut current = self.value;
 
-        for entry in LADDER {
+        for entry in ladder::VALUES {
             while current >= entry.value {
                 match self.style {
                     Style::Lower => f.write_str(entry.lower)?,
@@ -145,7 +135,7 @@ impl FromStr for Roman {
 
     fn from_str(s: &str) -> Result<Self> {
         match RomanUnitIterator::new(s).sum::<Result<i32>>()? {
-            sum @ 1..=4999 => Ok(Roman::new_unchecked(sum as u16)),
+            sum @ 1..=4999 => Ok(Roman(sum as u16)),
             sum => Err(Error::OutOfRange(sum)),
         }
     }
@@ -156,80 +146,6 @@ impl Display for Roman {
         self.format(Style::Upper).fmt(f)
     }
 }
-
-struct LadderEntry {
-    upper: &'static str,
-    lower: &'static str,
-    value: u16,
-}
-
-static LADDER: &[LadderEntry] = &[
-    LadderEntry {
-        upper: "M",
-        lower: "m",
-        value: 1000,
-    },
-    LadderEntry {
-        upper: "CM",
-        lower: "cm",
-        value: 900,
-    },
-    LadderEntry {
-        upper: "D",
-        lower: "d",
-        value: 500,
-    },
-    LadderEntry {
-        upper: "CD",
-        lower: "cd",
-        value: 400,
-    },
-    LadderEntry {
-        upper: "C",
-        lower: "c",
-        value: 100,
-    },
-    LadderEntry {
-        upper: "XC",
-        lower: "xc",
-        value: 90,
-    },
-    LadderEntry {
-        upper: "L",
-        lower: "l",
-        value: 50,
-    },
-    LadderEntry {
-        upper: "XL",
-        lower: "xl",
-        value: 40,
-    },
-    LadderEntry {
-        upper: "X",
-        lower: "x",
-        value: 10,
-    },
-    LadderEntry {
-        upper: "IX",
-        lower: "ix",
-        value: 9,
-    },
-    LadderEntry {
-        upper: "V",
-        lower: "v",
-        value: 5,
-    },
-    LadderEntry {
-        upper: "IV",
-        lower: "iv",
-        value: 4,
-    },
-    LadderEntry {
-        upper: "I",
-        lower: "i",
-        value: 1,
-    },
-];
 
 #[cfg(test)]
 mod tests {
@@ -263,6 +179,6 @@ mod tests {
     #[test]
     fn mmmmcmxcix_parses_as_4999() {
         let result: Roman = "MMMMCMXCIX".parse().unwrap();
-        assert_eq!(4999, result.into_inner());
+        assert_eq!(4999, result.get());
     }
 }

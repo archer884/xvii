@@ -13,11 +13,11 @@
 //! ```rust
 //! # use xvii::Roman;
 //! let seventeen: Roman = "XVII".parse().unwrap();
-//! assert_eq!(17, seventeen.into_inner());
+//! assert_eq!(17, seventeen.get());
 //! assert_eq!("XVII", seventeen.to_string());
 //!
 //! let seventeen = Roman::new(17).unwrap();
-//! assert_eq!(17, seventeen.into_inner());
+//! assert_eq!(17, seventeen.get());
 //! assert_eq!("XVII", seventeen.to_string());
 //! ```
 #![deny(
