@@ -12,3 +12,6 @@ keywords = ["roman", "numeral", "xvii", "seventeen"]
 description = """
 Library for parsing or printing Roman numerals
 """
+
+[features]
+std = []

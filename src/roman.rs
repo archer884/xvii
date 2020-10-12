@@ -1,7 +1,7 @@
 mod ladder;
 
 use crate::{unit::RomanUnitIterator, Error, Result};
-use std::{
+use core::{
     fmt::{self, Display},
     num::NonZeroU16,
     str::FromStr,
@@ -35,6 +35,8 @@ impl Roman {
     /// use xvii::Roman;
     /// assert_eq!(Roman::new(42).unwrap().to_uppercase(), "XLII");
     /// ```
+    #[cfg(feature = "std")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
     pub fn to_uppercase(self) -> String {
         let mut current = self.0.get();
         let mut buf = String::new();
@@ -57,6 +59,8 @@ impl Roman {
     /// use xvii::Roman;
     /// assert_eq!(Roman::new(42).unwrap().to_lowercase(), "xlii");
     /// ```
+    #[cfg(feature = "std")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
     pub fn to_lowercase(self) -> String {
         let mut current = self.0.get();
         let mut buf = String::new();
@@ -125,7 +129,7 @@ pub enum Style {
 
 /// Lazy roman formatter.
 ///
-/// This struct is created by [`format`] method.
+/// This struct is created by [`format`](Roman::format) method.
 #[derive(Debug, Copy, Clone)]
 pub struct RomanFormatter {
     style: Style,
