@@ -1,7 +1,6 @@
 [package]
 name = "xvii"
-# Do not forget bump the version before release. There were breaking changes.
-version = "0.4.0"
+version = "0.4.1"
 authors = ["J/A <archer884@gmail.com>"]
 edition = "2018"
 license = "MIT/Apache-2.0"

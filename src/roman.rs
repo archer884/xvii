@@ -20,13 +20,10 @@ impl Roman {
     /// This function will return `None` if the value supplied is outside the
     /// acceptable range of `1..=4999`, because numbers outside that range
     /// cannot be appropriately formatted using the seven standard numerals.
-    pub const fn new(n: u16) -> Option<Roman> {
-        match n {
-            n if n <= 4999 => match NonZeroU16::new(n) {
-                Some(inner) => Some(Self(inner)),
-                None => None,
-            },
-            _ => None,
+    pub fn new(n: u16) -> Result<Roman> {
+        match NonZeroU16::new(n) {
+            Some(n) if n.get() <= 4999 => Ok(Roman(n)),
+            _ => Err(Error::OutOfRange(n)),
         }
     }
 
@@ -163,7 +160,7 @@ impl FromStr for Roman {
     fn from_str(s: &str) -> Result<Self> {
         let sum = RomanUnitIterator::new(s)
             .try_fold(0, |acc, r| r?.checked_add(acc).ok_or(Error::Overflow))?;
-        Roman::new(sum).ok_or(Error::OutOfRange(sum))
+        Roman::new(sum)
     }
 }
 

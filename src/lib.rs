@@ -34,10 +34,10 @@
 // `RUSTFLAGS="--cfg docsrs" cargo +nightly doc --all-features`
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
-    unsafe_code,
-    missing_docs,
+    broken_intra_doc_links,
     missing_debug_implementations,
-    broken_intra_doc_links
+    missing_docs,
+    unsafe_code
 )]
 
 mod error;
