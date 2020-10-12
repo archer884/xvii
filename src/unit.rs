@@ -33,7 +33,7 @@ impl Accumulator {
         Some(res)
     }
 
-    fn value(&self) -> Option<u16> {
+    const fn value(&self) -> Option<u16> {
         self.qty.checked_mul(self.val)
     }
 }

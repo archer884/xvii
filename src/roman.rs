@@ -20,9 +20,12 @@ impl Roman {
     /// This function will return `None` if the value supplied is outside the
     /// acceptable range of `1..=4999`, because numbers outside that range
     /// cannot be appropriately formatted using the seven standard numerals.
-    pub fn new(n: u16) -> Option<Roman> {
+    pub const fn new(n: u16) -> Option<Roman> {
         match n {
-            n if n <= 4999 => NonZeroU16::new(n).map(Roman),
+            n if n <= 4999 => match NonZeroU16::new(n) {
+                Some(inner) => Some(Self(inner)),
+                None => None,
+            },
             _ => None,
         }
     }
@@ -86,7 +89,7 @@ impl Roman {
     /// assert_eq!(format!("{}", value.format(Style::Upper)), "XII");
     /// assert_eq!(value.format(Style::Lower).to_string(), "xii"); // `format!("{}")` and `.to_string()` are the same thing
     /// ```
-    pub fn format(&self, style: Style) -> RomanFormatter {
+    pub const fn format(&self, style: Style) -> RomanFormatter {
         RomanFormatter {
             style,
             value: self.0,
@@ -101,7 +104,7 @@ impl Roman {
     /// let roman = xvii::Roman::new(42).unwrap();
     /// assert_eq!(roman.value(), 42);
     /// ```
-    pub fn value(self) -> u16 {
+    pub const fn value(self) -> u16 {
         self.0.get()
     }
 
@@ -113,7 +116,7 @@ impl Roman {
     /// let roman = xvii::Roman::new(42).unwrap();
     /// assert_eq!(roman.into_inner(), std::num::NonZeroU16::new(42).unwrap());
     /// ```
-    pub fn into_inner(self) -> NonZeroU16 {
+    pub const fn into_inner(self) -> NonZeroU16 {
         self.0
     }
 }
