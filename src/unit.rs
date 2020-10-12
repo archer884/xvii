@@ -126,8 +126,8 @@ mod tests {
 
     #[test]
     fn i_equals_1() {
-        assert_eq!(1, "i".parse::<Roman>().unwrap().get());
-        assert_eq!(1, "I".parse::<Roman>().unwrap().get());
+        assert_eq!(1, "i".parse::<Roman>().unwrap().value());
+        assert_eq!(1, "I".parse::<Roman>().unwrap().value());
     }
 
     #[test]
@@ -138,12 +138,12 @@ mod tests {
 
     #[test]
     fn ix_equals_9() {
-        assert_eq!(9, "ix".parse::<Roman>().unwrap().get());
+        assert_eq!(9, "ix".parse::<Roman>().unwrap().value());
     }
 
     #[test]
     fn iiiiix_equals_5() {
         // Yes, I know this is stupid, but this is how units are meant to work.
-        assert_eq!(5, "iiiiix".parse::<Roman>().unwrap().get());
+        assert_eq!(5, "iiiiix".parse::<Roman>().unwrap().value());
     }
 }

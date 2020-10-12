@@ -5,7 +5,7 @@ use std::{fmt::{self, Display}, num::NonZeroU16, str::FromStr};
 
 /// A Roman numeral.
 ///
-/// This struct stores the value of a numeral as an [`u16`] but provides
+/// This struct stores the value of a numeral as an [`NonZeroU16`] but provides
 /// for Roman-style formatting.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
 pub struct Roman(NonZeroU16);
@@ -14,7 +14,7 @@ impl Roman {
     /// Creates a `Roman` value based on a [`u16`].
     ///
     /// This function will return `None` if the value supplied is outside the
-    /// acceptable range of `1...4999`, because numbers outside that range
+    /// acceptable range of `1..=4999`, because numbers outside that range
     /// cannot be appropriately formatted using the seven standard numerals.
     pub fn new(n: u16) -> Option<Roman> {
         match n {
@@ -85,12 +85,26 @@ impl Roman {
         }
     }
 
-    /// Returns the inner value.
-    pub fn get(self) -> u16 {
+    /// Returns value of this `Roman` numeral.
+    ///
+    /// ## Examples
+    ///
+    /// ```rust
+    /// let roman = xvii::Roman::new(42).unwrap();
+    /// assert_eq!(roman.value(), 42);
+    /// ```
+    pub fn value(self) -> u16 {
         self.0.get()
     }
 
     /// Returns the inner value.
+    ///
+    /// ## Examples
+    ///
+    /// ```rust
+    /// let roman = xvii::Roman::new(42).unwrap();
+    /// assert_eq!(roman.into_inner(), std::num::NonZeroU16::new(42).unwrap());
+    /// ```
     pub fn into_inner(self) -> NonZeroU16 {
         self.0
     }
@@ -179,6 +193,6 @@ mod tests {
     #[test]
     fn mmmmcmxcix_parses_as_4999() {
         let result: Roman = "MMMMCMXCIX".parse().unwrap();
-        assert_eq!(4999, result.get());
+        assert_eq!(4999, result.value());
     }
 }
