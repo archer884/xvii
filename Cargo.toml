@@ -14,6 +14,7 @@ Library for parsing or printing Roman numerals
 """
 
 [features]
+default = ["std"]
 std = []
 
 [package.metadata."docs.rs"]

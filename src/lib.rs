@@ -23,10 +23,11 @@
 //!
 //! # `no_std` support
 //!
-//! No-std mode is supported, **unless** `std` crate feature is enabled
+//! `no_std` mode is supported if crate is built without `std` feature (enabled by default).
+//! I.e. you need to turn off default features to build `xvii` without std:
 //!
 //! ```toml
-//! xvii = { version = "...", features = ["std"] }
+//! xvii = { version = "...", default-features = false }
 //! ```
 #![cfg_attr(not(any(feature = "std", test)), no_std)]
 // To build docs properly, run
