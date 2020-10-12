@@ -8,31 +8,33 @@ use std::str;
 /// multiplying these two.
 #[derive(Default)]
 struct Accumulator {
-    qty: i32,
-    val: i32,
+    qty: u16,
+    val: u16,
 }
 
 impl Accumulator {
-    fn new(val: i32) -> Self {
+    fn new(val: u16) -> Self {
         Accumulator { qty: 1, val }
     }
 
-    fn push(mut self, val: i32) -> PushResult {
+    fn push(mut self, val: u16) -> Option<PushResult> {
         use std::cmp::Ordering::*;
 
-        match self.val.cmp(&val) {
+        let res = match self.val.cmp(&val) {
             Equal => {
                 self.qty += 1;
                 PushResult::Partial(self)
             }
 
-            Less => PushResult::Complete(val - self.value(), None),
-            Greater => PushResult::Complete(self.value(), Some(Accumulator::new(val))),
-        }
+            Less => PushResult::Complete(val - self.value()?, None),
+            Greater => PushResult::Complete(self.value()?, Some(Accumulator::new(val))),
+        };
+
+        Some(res)
     }
 
-    fn value(&self) -> i32 {
-        self.qty * self.val
+    fn value(&self) -> Option<u16> {
+        self.qty.checked_mul(self.val)
     }
 }
 
@@ -45,7 +47,7 @@ impl Accumulator {
 /// produced by the iterator and a new accumulator created.
 enum PushResult {
     Partial(Accumulator),
-    Complete(i32, Option<Accumulator>),
+    Complete(u16, Option<Accumulator>),
 }
 
 /// Iterates "units" of a Roman numeral.
@@ -70,12 +72,17 @@ impl<'a> RomanUnitIterator<'a> {
 }
 
 impl<'a> Iterator for RomanUnitIterator<'a> {
-    type Item = Result<i32>;
+    type Item = Result<u16>;
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
             let value = match self.bytes.next() {
-                None => return self.acc.take().map(|acc| Ok(acc.value())),
+                None => {
+                    return self
+                        .acc
+                        .take()
+                        .map(|acc| acc.value().ok_or(Error::Overflow))
+                }
                 Some(u) => match to_digit(u) {
                     Ok(u) => u,
                     Err(e) => return Some(Err(e)),
@@ -85,8 +92,9 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
             match self.acc.take() {
                 None => self.acc = Some(Accumulator::new(value)),
                 Some(acc) => match acc.push(value) {
-                    PushResult::Partial(acc) => self.acc = Some(acc),
-                    PushResult::Complete(n, acc) => {
+                    None => return Some(Err(Error::Overflow)),
+                    Some(PushResult::Partial(acc)) => self.acc = Some(acc),
+                    Some(PushResult::Complete(n, acc)) => {
                         self.acc = acc;
                         return Some(Ok(n));
                     }
@@ -96,7 +104,7 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
     }
 }
 
-fn to_digit(u: u8) -> Result<i32> {
+fn to_digit(u: u8) -> Result<u16> {
     match u.to_ascii_lowercase() {
         b'm' => Ok(1000),
         b'd' => Ok(500),
@@ -126,8 +134,8 @@ mod tests {
 
     #[test]
     fn i_equals_1() {
-        assert_eq!(1, "i".parse::<Roman>().unwrap().get());
-        assert_eq!(1, "I".parse::<Roman>().unwrap().get());
+        assert_eq!(1, "i".parse::<Roman>().unwrap().value());
+        assert_eq!(1, "I".parse::<Roman>().unwrap().value());
     }
 
     #[test]
@@ -138,12 +146,12 @@ mod tests {
 
     #[test]
     fn ix_equals_9() {
-        assert_eq!(9, "ix".parse::<Roman>().unwrap().get());
+        assert_eq!(9, "ix".parse::<Roman>().unwrap().value());
     }
 
     #[test]
     fn iiiiix_equals_5() {
         // Yes, I know this is stupid, but this is how units are meant to work.
-        assert_eq!(5, "iiiiix".parse::<Roman>().unwrap().get());
+        assert_eq!(5, "iiiiix".parse::<Roman>().unwrap().value());
     }
 }

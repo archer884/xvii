@@ -26,7 +26,7 @@ let seventeen: Roman = "XVII".parse().unwrap();
 
 There are several formatting options. `Roman` implements `Display`, which means that it'll work fine with `println!("{}")` et al., but for maximum efficiency (stop laughing!) I also provide two other functions: `to_lowercase()` and `to_uppercase()`. These skip the `Display` piping and just go straight into a new string.
 
-Regarding formatting, there is one gotcha regarding the formatting of `Roman` values created via `Roman::new_unchecked()`: values that are less than the minimum printable value will come out as empty strings, while values that are larger will simply look like `MMMMMMMMMMMMMMMXIV` or something like that.
+Regarding formatting, there is one gotcha regarding the formatting of `Roman` values created via `Roman::new_unchecked()`: values that are larger than `4999` will simply look like `MMMMMMMMMMMMMMMXIV` or something like that.
 
 ## Changelog
 

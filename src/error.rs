@@ -4,13 +4,16 @@ use std::{
 };
 
 /// An error in parsing a Roman numeral.
-#[derive(Debug)]
+#[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
 pub enum Error {
     /// Encountered an invalid digit while parsing.
     InvalidDigit(u8),
 
     /// Value out of range.
-    OutOfRange(i32),
+    OutOfRange(u16),
+
+    /// Value is way out of range (> 65536).
+    Overflow,
 }
 
 impl Display for Error {
@@ -20,6 +23,7 @@ impl Display for Error {
                 write!(f, "Parser encountered an invalid digit: {}", *digit as char)
             }
             Error::OutOfRange(value) => write!(f, "Value out of range: {}", value),
+            Error::Overflow => f.write_str("Value out of range"),
         }
     }
 }

@@ -3,25 +3,26 @@ mod ladder;
 use crate::{unit::RomanUnitIterator, Error, Result};
 use std::{
     fmt::{self, Display},
+    num::NonZeroU16,
     str::FromStr,
 };
 
 /// A Roman numeral.
 ///
-/// This struct stores the value of a numeral as an [`u16`] but provides
+/// This struct stores the value of a numeral as an [`NonZeroU16`] but provides
 /// for Roman-style formatting.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Ord, PartialOrd, Hash)]
-pub struct Roman(u16);
+pub struct Roman(NonZeroU16);
 
 impl Roman {
     /// Creates a `Roman` value based on a [`u16`].
     ///
     /// This function will return `None` if the value supplied is outside the
-    /// acceptable range of `1...4999`, because numbers outside that range
+    /// acceptable range of `1..=4999`, because numbers outside that range
     /// cannot be appropriately formatted using the seven standard numerals.
     pub fn new(n: u16) -> Option<Roman> {
         match n {
-            n @ 1..=4999 => Some(Roman(n)),
+            n if n <= 4999 => NonZeroU16::new(n).map(Roman),
             _ => None,
         }
     }
@@ -35,7 +36,7 @@ impl Roman {
     /// assert_eq!(Roman::new(42).unwrap().to_uppercase(), "XLII");
     /// ```
     pub fn to_uppercase(self) -> String {
-        let mut current = self.0;
+        let mut current = self.0.get();
         let mut buf = String::new();
 
         for entry in ladder::VALUES {
@@ -57,7 +58,7 @@ impl Roman {
     /// assert_eq!(Roman::new(42).unwrap().to_lowercase(), "xlii");
     /// ```
     pub fn to_lowercase(self) -> String {
-        let mut current = self.0;
+        let mut current = self.0.get();
         let mut buf = String::new();
 
         for entry in ladder::VALUES {
@@ -88,8 +89,27 @@ impl Roman {
         }
     }
 
+    /// Returns value of this `Roman` numeral.
+    ///
+    /// ## Examples
+    ///
+    /// ```rust
+    /// let roman = xvii::Roman::new(42).unwrap();
+    /// assert_eq!(roman.value(), 42);
+    /// ```
+    pub fn value(self) -> u16 {
+        self.0.get()
+    }
+
     /// Returns the inner value.
-    pub fn get(self) -> u16 {
+    ///
+    /// ## Examples
+    ///
+    /// ```rust
+    /// let roman = xvii::Roman::new(42).unwrap();
+    /// assert_eq!(roman.into_inner(), std::num::NonZeroU16::new(42).unwrap());
+    /// ```
+    pub fn into_inner(self) -> NonZeroU16 {
         self.0
     }
 }
@@ -109,12 +129,12 @@ pub enum Style {
 #[derive(Debug, Copy, Clone)]
 pub struct RomanFormatter {
     style: Style,
-    value: u16,
+    value: NonZeroU16,
 }
 
 impl Display for RomanFormatter {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        let mut current = self.value;
+        let mut current = self.value.get();
 
         for entry in ladder::VALUES {
             while current >= entry.value {
@@ -134,10 +154,9 @@ impl FromStr for Roman {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
-        match RomanUnitIterator::new(s).sum::<Result<i32>>()? {
-            sum @ 1..=4999 => Ok(Roman(sum as u16)),
-            sum => Err(Error::OutOfRange(sum)),
-        }
+        let sum = RomanUnitIterator::new(s)
+            .try_fold(0, |acc, r| r?.checked_add(acc).ok_or(Error::Overflow))?;
+        Roman::new(sum).ok_or(Error::OutOfRange(sum))
     }
 }
 
@@ -149,36 +168,66 @@ impl Display for Roman {
 
 #[cfg(test)]
 mod tests {
+    use crate::Error;
+
     use super::Roman;
 
     #[test]
     fn mcmlxxxiv_equals_1984() {
-        assert_eq!("MCMLXXXIV", Roman(1984).to_string());
+        assert_eq!("MCMLXXXIV", Roman::new(1984).unwrap().to_string());
     }
 
     #[test]
     fn mmdxxix_equals_2529() {
-        assert_eq!("MMDXXIX", Roman(2529).to_string());
+        assert_eq!("MMDXXIX", Roman::new(2529).unwrap().to_string());
     }
 
     #[test]
     fn mmcmxcix_equals_2999() {
-        assert_eq!("MMCMXCIX", Roman(2999).to_string());
+        assert_eq!("MMCMXCIX", Roman::new(2999).unwrap().to_string());
     }
 
     #[test]
     fn mmmcmxcix_value_equals_3999() {
-        assert_eq!("MMMCMXCIX", Roman(3999).to_string());
+        assert_eq!("MMMCMXCIX", Roman::new(3999).unwrap().to_string());
     }
 
     #[test]
     fn max_value_equals_4999() {
-        assert_eq!("MMMMCMXCIX", Roman(4999).to_string());
+        assert_eq!("MMMMCMXCIX", Roman::new(4999).unwrap().to_string());
     }
 
     #[test]
     fn mmmmcmxcix_parses_as_4999() {
         let result: Roman = "MMMMCMXCIX".parse().unwrap();
-        assert_eq!(4999, result.get());
+        assert_eq!(4999, result.value());
+    }
+
+    #[test]
+    fn overflow() {
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMCM".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "CMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCM".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM".parse::<Roman>()
+        );
     }
 }
