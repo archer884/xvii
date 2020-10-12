@@ -1,7 +1,11 @@
 mod ladder;
 
 use crate::{unit::RomanUnitIterator, Error, Result};
-use std::{fmt::{self, Display}, num::NonZeroU16, str::FromStr};
+use std::{
+    fmt::{self, Display},
+    num::NonZeroU16,
+    str::FromStr,
+};
 
 /// A Roman numeral.
 ///
@@ -150,7 +154,8 @@ impl FromStr for Roman {
     type Err = Error;
 
     fn from_str(s: &str) -> Result<Self> {
-        let sum = RomanUnitIterator::new(s).sum::<Result<u16>>()?;
+        let sum = RomanUnitIterator::new(s)
+            .try_fold(0, |acc, r| r?.checked_add(acc).ok_or(Error::Overflow))?;
         Roman::new(sum).ok_or(Error::OutOfRange(sum))
     }
 }
@@ -163,6 +168,8 @@ impl Display for Roman {
 
 #[cfg(test)]
 mod tests {
+    use crate::Error;
+
     use super::Roman;
 
     #[test]
@@ -194,5 +201,33 @@ mod tests {
     fn mmmmcmxcix_parses_as_4999() {
         let result: Roman = "MMMMCMXCIX".parse().unwrap();
         assert_eq!(4999, result.value());
+    }
+
+    #[test]
+    fn overflow() {
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMCM".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "CMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCM".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCMCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCDCD".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM".parse::<Roman>()
+        );
+
+        assert_eq!(
+            Err(Error::Overflow),
+            "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM".parse::<Roman>()
+        );
     }
 }

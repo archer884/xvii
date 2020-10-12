@@ -17,22 +17,24 @@ impl Accumulator {
         Accumulator { qty: 1, val }
     }
 
-    fn push(mut self, val: u16) -> PushResult {
+    fn push(mut self, val: u16) -> Option<PushResult> {
         use std::cmp::Ordering::*;
 
-        match self.val.cmp(&val) {
+        let res = match self.val.cmp(&val) {
             Equal => {
                 self.qty += 1;
                 PushResult::Partial(self)
             }
 
-            Less => PushResult::Complete(val - self.value(), None),
-            Greater => PushResult::Complete(self.value(), Some(Accumulator::new(val))),
-        }
+            Less => PushResult::Complete(val - self.value()?, None),
+            Greater => PushResult::Complete(self.value()?, Some(Accumulator::new(val))),
+        };
+
+        Some(res)
     }
 
-    fn value(&self) -> u16 {
-        self.qty * self.val
+    fn value(&self) -> Option<u16> {
+        self.qty.checked_mul(self.val)
     }
 }
 
@@ -75,7 +77,12 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
     fn next(&mut self) -> Option<Self::Item> {
         loop {
             let value = match self.bytes.next() {
-                None => return self.acc.take().map(|acc| Ok(acc.value())),
+                None => {
+                    return self
+                        .acc
+                        .take()
+                        .map(|acc| acc.value().ok_or(Error::Overflow))
+                }
                 Some(u) => match to_digit(u) {
                     Ok(u) => u,
                     Err(e) => return Some(Err(e)),
@@ -85,8 +92,9 @@ impl<'a> Iterator for RomanUnitIterator<'a> {
             match self.acc.take() {
                 None => self.acc = Some(Accumulator::new(value)),
                 Some(acc) => match acc.push(value) {
-                    PushResult::Partial(acc) => self.acc = Some(acc),
-                    PushResult::Complete(n, acc) => {
+                    None => return Some(Err(Error::Overflow)),
+                    Some(PushResult::Partial(acc)) => self.acc = Some(acc),
+                    Some(PushResult::Complete(n, acc)) => {
                         self.acc = acc;
                         return Some(Ok(n));
                     }
