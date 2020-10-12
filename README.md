@@ -12,8 +12,6 @@ This library provides parsing and formatting for Roman numerals. According to my
 
 Also, if you have a high-availability NAAS project, you need to have your head examined. I don't know if that was clear when I originally wrote this readme, so I'm adding it now.
 
-_Compiler support: requires rustc 1.47+_
-
 ## Usage
 
 ### Parsing
@@ -32,6 +30,7 @@ Regarding formatting, there is one gotcha regarding the formatting of `Roman` va
 
 ## Changelog
 
+* **v0.4.1** Upgrade to rust edition 2018, support for no-std usage (thanks to [WaffleLapkin](https://github.com/WaffleLapkin)!), plenty of cleanup (also thanks to him, really).
 * **v0.2.2** Upgrade parsing to use some kind of whacky state machine in order to permit numbers up to the commonly accepted ceiling of 4999, or MMMMCMXCIX, thereby avoiding a potential Y4K bug. Your thousand year reich is now safe with me.
 
 ## License
