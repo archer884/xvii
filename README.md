@@ -12,6 +12,8 @@ This library provides parsing and formatting for Roman numerals. According to my
 
 Also, if you have a high-availability NAAS project, you need to have your head examined. I don't know if that was clear when I originally wrote this readme, so I'm adding it now.
 
+_Compiler support: requires rustc 1.47+_
+
 ## Usage
 
 ### Parsing

@@ -1,7 +1,4 @@
-use std::{
-    error,
-    fmt::{self, Display},
-};
+use core::fmt::{self, Display};
 
 /// An error in parsing a Roman numeral.
 #[derive(Copy, Clone, Debug, Eq, PartialEq, Hash)]
@@ -28,4 +25,5 @@ impl Display for Error {
     }
 }
 
-impl error::Error for Error {}
+#[cfg(feature = "std")]
+impl std::error::Error for Error {}

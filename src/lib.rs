@@ -20,6 +20,19 @@
 //! assert_eq!(17, seventeen.value());
 //! assert_eq!("XVII", seventeen.to_string());
 //! ```
+//!
+//! # `no_std` support
+//!
+//! `no_std` mode is supported if crate is built without `std` feature (enabled by default).
+//! I.e. you need to turn off default features to build `xvii` without std:
+//!
+//! ```toml
+//! xvii = { version = "...", default-features = false }
+//! ```
+#![cfg_attr(not(any(feature = "std", test)), no_std)]
+// To build docs properly, run
+// `RUSTFLAGS="--cfg docsrs" cargo +nightly doc --all-features`
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(
     unsafe_code,
     missing_docs,
@@ -35,4 +48,4 @@ pub use error::Error;
 pub use roman::{Roman, RomanFormatter, Style};
 
 /// [`Result`](std::result::Result) with error defaulted to [`xvii::Error`](Error)
-pub type Result<T, E = Error> = std::result::Result<T, E>;
+pub type Result<T, E = Error> = core::result::Result<T, E>;

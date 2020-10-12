@@ -1,5 +1,5 @@
 use crate::{Error, Result};
-use std::str;
+use core::str;
 
 /// Accumulates the value of a single numeral "unit".
 ///
@@ -18,7 +18,7 @@ impl Accumulator {
     }
 
     fn push(mut self, val: u16) -> Option<PushResult> {
-        use std::cmp::Ordering::*;
+        use core::cmp::Ordering::*;
 
         let res = match self.val.cmp(&val) {
             Equal => {
@@ -33,7 +33,7 @@ impl Accumulator {
         Some(res)
     }
 
-    fn value(&self) -> Option<u16> {
+    const fn value(&self) -> Option<u16> {
         self.qty.checked_mul(self.val)
     }
 }
